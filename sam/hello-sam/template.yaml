@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Hello World with SAM
+Globals:
+  Function:
+    MemorySize: 128
+    Runtime: nodejs10.x
+    Timeout: 5
+Resources:
+  MyBucket:
+    Type: AWS::S3::Bucket
+  eventLogger:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: logger.handler
+      Timeout: 3
+      Events:
+        GetLogs:
+          Type: Api
+          Properties:
+            Path: /logs
+            Method: get
+        FileUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref MyBucket
+            Events: s3:ObjectCreated:*
+  addNumbers:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: add.handler
+      Events:
+        Add:
+          Type: Api
+          Properties:
+            Path: /add
+            Method: post
